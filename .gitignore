@@ -1,0 +1,4 @@
+/projects/**/*.out
+/projects/**/*.hack
+/tools/bin/*.dat
+*.zip
