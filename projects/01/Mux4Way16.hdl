@@ -16,5 +16,62 @@ CHIP Mux4Way16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    And16(
+      a[0]=sel[0],
+      a[1]=sel[0],
+      a[2]=sel[0],
+      a[3]=sel[0],
+      a[4]=sel[0],
+      a[5]=sel[0],
+      a[6]=sel[0],
+      a[7]=sel[0],
+      a[8]=sel[0],
+      a[9]=sel[0],
+      a[10]=sel[0],
+      a[11]=sel[0],
+      a[12]=sel[0],
+      a[13]=sel[0],
+      a[14]=sel[0],
+      a[15]=sel[0],
+      b=true,
+      out=sel-l-16
+    );
+    And16(
+      a[0]=sel[1],
+      a[1]=sel[1],
+      a[2]=sel[1],
+      a[3]=sel[1],
+      a[4]=sel[1],
+      a[5]=sel[1],
+      a[6]=sel[1],
+      a[7]=sel[1],
+      a[8]=sel[1],
+      a[9]=sel[1],
+      a[10]=sel[1],
+      a[11]=sel[1],
+      a[12]=sel[1],
+      a[13]=sel[1],
+      a[14]=sel[1],
+      a[15]=sel[1],
+      b=true,
+      out=sel-h-16
+    );
+    Not16(in=sel-l-16, out=not-sel-l-16);
+    Not16(in=sel-h-16, out=not-sel-h-16);
+
+    And16(a=a, b=not-sel-h-16, out=a-sel-tmp);
+    And16(a=a-sel-tmp, b=not-sel-l-16, out=a-sel);
+
+    And16(a=b, b=not-sel-h-16, out=b-sel-tmp);
+    And16(a=b-sel-tmp, b=sel-l-16, out=b-sel);
+
+    And16(a=c, b=sel-h-16, out=c-sel-tmp);
+    And16(a=c-sel-tmp, b=not-sel-l-16, out=c-sel);
+
+    And16(a=d, b=sel-h-16, out=d-sel-tmp);
+    And16(a=d-sel-tmp, b=sel-l-16, out=d-sel);
+
+    Or16(a=a-sel, b=b-sel, out=or-tmp0);
+    Or16(a=or-tmp0, b=c-sel, out=or-tmp1);
+    Or16(a=or-tmp1, b=d-sel, out=out);
 }

@@ -18,5 +18,107 @@ CHIP Mux8Way16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    And16(
+      a[0]=sel[0],
+      a[1]=sel[0],
+      a[2]=sel[0],
+      a[3]=sel[0],
+      a[4]=sel[0],
+      a[5]=sel[0],
+      a[6]=sel[0],
+      a[7]=sel[0],
+      a[8]=sel[0],
+      a[9]=sel[0],
+      a[10]=sel[0],
+      a[11]=sel[0],
+      a[12]=sel[0],
+      a[13]=sel[0],
+      a[14]=sel[0],
+      a[15]=sel[0],
+      b=true,
+      out=sel-0-16
+    );
+    And16(
+      a[0]=sel[1],
+      a[1]=sel[1],
+      a[2]=sel[1],
+      a[3]=sel[1],
+      a[4]=sel[1],
+      a[5]=sel[1],
+      a[6]=sel[1],
+      a[7]=sel[1],
+      a[8]=sel[1],
+      a[9]=sel[1],
+      a[10]=sel[1],
+      a[11]=sel[1],
+      a[12]=sel[1],
+      a[13]=sel[1],
+      a[14]=sel[1],
+      a[15]=sel[1],
+      b=true,
+      out=sel-1-16
+    );
+    And16(
+      a[0]=sel[2],
+      a[1]=sel[2],
+      a[2]=sel[2],
+      a[3]=sel[2],
+      a[4]=sel[2],
+      a[5]=sel[2],
+      a[6]=sel[2],
+      a[7]=sel[2],
+      a[8]=sel[2],
+      a[9]=sel[2],
+      a[10]=sel[2],
+      a[11]=sel[2],
+      a[12]=sel[2],
+      a[13]=sel[2],
+      a[14]=sel[2],
+      a[15]=sel[2],
+      b=true,
+      out=sel-2-16
+    );
+    Not16(in=sel-0-16, out=not-sel-0-16);
+    Not16(in=sel-1-16, out=not-sel-1-16);
+    Not16(in=sel-2-16, out=not-sel-2-16);
+
+    And16(a=a, b=not-sel-2-16, out=a-sel-tmp0);
+    And16(a=a-sel-tmp0, b=not-sel-1-16, out=a-sel-tmp1);
+    And16(a=a-sel-tmp1, b=not-sel-0-16, out=a-sel);
+
+    And16(a=b, b=not-sel-2-16, out=b-sel-tmp0);
+    And16(a=b-sel-tmp0, b=not-sel-1-16, out=b-sel-tmp1);
+    And16(a=b-sel-tmp1, b=sel-0-16, out=b-sel);
+
+    And16(a=c, b=not-sel-2-16, out=c-sel-tmp0);
+    And16(a=c-sel-tmp0, b=sel-1-16, out=c-sel-tmp1);
+    And16(a=c-sel-tmp1, b=not-sel-0-16, out=c-sel);
+
+    And16(a=d, b=not-sel-2-16, out=d-sel-tmp0);
+    And16(a=d-sel-tmp0, b=sel-1-16, out=d-sel-tmp1);
+    And16(a=d-sel-tmp1, b=sel-0-16, out=d-sel);
+
+    And16(a=e, b=sel-2-16, out=e-sel-tmp0);
+    And16(a=e-sel-tmp0, b=not-sel-1-16, out=e-sel-tmp1);
+    And16(a=e-sel-tmp1, b=not-sel-0-16, out=e-sel);
+
+    And16(a=f, b=sel-2-16, out=f-sel-tmp0);
+    And16(a=f-sel-tmp0, b=not-sel-1-16, out=f-sel-tmp1);
+    And16(a=f-sel-tmp1, b=sel-0-16, out=f-sel);
+
+    And16(a=g, b=sel-2-16, out=g-sel-tmp0);
+    And16(a=g-sel-tmp0, b=sel-1-16, out=g-sel-tmp1);
+    And16(a=g-sel-tmp1, b=not-sel-0-16, out=g-sel);
+
+    And16(a=h, b=sel-2-16, out=h-sel-tmp0);
+    And16(a=h-sel-tmp0, b=sel-1-16, out=h-sel-tmp1);
+    And16(a=h-sel-tmp1, b=sel-0-16, out=h-sel);
+
+    Or16(a=a-sel, b=b-sel, out=or-tmp0);
+    Or16(a=or-tmp0, b=c-sel, out=or-tmp1);
+    Or16(a=or-tmp1, b=d-sel, out=or-tmp2);
+    Or16(a=or-tmp2, b=e-sel, out=or-tmp3);
+    Or16(a=or-tmp3, b=f-sel, out=or-tmp4);
+    Or16(a=or-tmp4, b=g-sel, out=or-tmp5);
+    Or16(a=or-tmp5, b=h-sel, out=out);
 }
