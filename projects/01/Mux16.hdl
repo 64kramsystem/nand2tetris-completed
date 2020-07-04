@@ -38,4 +38,27 @@ CHIP Mux16 {
     And16(a=a, b=not-sel16, out=a-sel);
     And16(a=b, b=sel16, out=b-sel);
     Or16(a=a-sel, b=b-sel, out=out);
+
+    // Alternative
+    //
+    // And16(
+    //   a=b,
+    //   b[0]=sel,
+    //   b[1]=sel,
+    //   b[2]=sel,
+    //   b[3]=sel,
+    //   b[4]=sel,
+    //   b[5]=sel,
+    //   b[6]=sel,
+    //   b[7]=sel,
+    //   b[8]=sel,
+    //   b[9]=sel,
+    //   b[10]=sel,
+    //   b[11]=sel,
+    //   b[12]=sel,
+    //   b[13]=sel,
+    //   b[14]=sel,
+    //   b[15]=sel,
+    //   out=b-sel
+    // );
 }
