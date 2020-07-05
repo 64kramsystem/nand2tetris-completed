@@ -42,5 +42,69 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Simplified. The zx/zy mask can be simplified to a single but larger And16,
+    // or at least, the Mux16 can be converted to an (again, larger) Or16/And16.
+
+    // zx
+
+    Mux16(a=x, b=false, sel=zx, out=x-mask);
+    And16(a=x, b=x-mask, out=x-masked);
+
+    // nx
+
+    Not16(in=x-masked, out=not-x);
+    Mux16(a=x-masked, b=not-x, sel=nx, out=x-processed);
+
+    // zy
+
+    Mux16(a=y, b=false, sel=zy, out=y-mask);
+    And16(a=y, b=y-mask, out=y-masked);
+
+    // ny
+
+    Not16(in=y-masked, out=not-y);
+
+    Mux16(a=y-masked, b=not-y, sel=ny, out=y-processed);
+
+    // f (&/+)
+
+    Add16(a=x-processed, b=y-processed, out=sum-processed-x-y);
+    And16(a=x-processed, b=y-processed, out=and-processed-x-y);
+
+    Mux16(a=and-processed-x-y, b=sum-processed-x-y, sel=f, out=f-result);
+
+    // no
+
+    Not16(in=f-result, out=no-f-result);
+
+    Mux16(
+      a=f-result,
+      b=no-f-result,
+      sel=no,
+      out=out,
+      out[0]=out-bit0,
+      out[1]=out-bit1,
+      out[2]=out-bit2,
+      out[3]=out-bit3,
+      out[4]=out-bit4,
+      out[5]=out-bit5,
+      out[6]=out-bit6,
+      out[7]=out-bit7
+    );
+
+    // zr
+
+    Or(a=out-bit0, b=out-bit1, out=zr-tmp0);
+    Or(a=zr-tmp0, b=out-bit2, out=zr-tmp1);
+    Or(a=zr-tmp1, b=out-bit3, out=zr-tmp2);
+    Or(a=zr-tmp2, b=out-bit4, out=zr-tmp3);
+    Or(a=zr-tmp3, b=out-bit5, out=zr-tmp4);
+    Or(a=zr-tmp4, b=out-bit6, out=zr-tmp5);
+    Or(a=zr-tmp5, b=out-bit7, out=not-zr);
+
+    Not(in=not-zr, out=zr);
+
+    // ng
+
+    And(a=out-bit7, b=true, out=ng);
 }
