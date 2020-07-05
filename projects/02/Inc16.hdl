@@ -13,5 +13,26 @@ CHIP Inc16 {
     OUT out[16];
 
     PARTS:
-   // Put you code here:
+    // Lazypants version.
+    Or16(
+      a=false,
+      b[0]=true,
+      b[1]=false,
+      b[2]=false,
+      b[3]=false,
+      b[4]=false,
+      b[5]=false,
+      b[6]=false,
+      b[7]=false,
+      b[8]=false,
+      b[9]=false,
+      b[10]=false,
+      b[11]=false,
+      b[12]=false,
+      b[13]=false,
+      b[14]=false,
+      b[15]=false,
+      out=value-1
+   );
+   Add16(a=in, b=value-1, out=out);
 }
