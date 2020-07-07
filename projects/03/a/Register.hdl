@@ -14,5 +14,57 @@ CHIP Register {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Mux16(
+      a[0]=dff-out0,
+      a[1]=dff-out1,
+      a[2]=dff-out2,
+      a[3]=dff-out3,
+      a[4]=dff-out4,
+      a[5]=dff-out5,
+      a[6]=dff-out6,
+      a[7]=dff-out7,
+      a[8]=dff-out8,
+      a[9]=dff-out9,
+      a[10]=dff-out10,
+      a[11]=dff-out11,
+      a[12]=dff-out12,
+      a[13]=dff-out13,
+      a[14]=dff-out14,
+      a[15]=dff-out15,
+      b=in,
+      sel=load,
+      out[0]=dff-in0,
+      out[1]=dff-in1,
+      out[2]=dff-in2,
+      out[3]=dff-in3,
+      out[4]=dff-in4,
+      out[5]=dff-in5,
+      out[6]=dff-in6,
+      out[7]=dff-in7,
+      out[8]=dff-in8,
+      out[9]=dff-in9,
+      out[10]=dff-in10,
+      out[11]=dff-in11,
+      out[12]=dff-in12,
+      out[13]=dff-in13,
+      out[14]=dff-in14,
+      out[15]=dff-in15
+    );
+
+    DFF(in=dff-in0, out=dff-out0, out=out[0]);
+    DFF(in=dff-in1, out=dff-out1, out=out[1]);
+    DFF(in=dff-in2, out=dff-out2, out=out[2]);
+    DFF(in=dff-in3, out=dff-out3, out=out[3]);
+    DFF(in=dff-in4, out=dff-out4, out=out[4]);
+    DFF(in=dff-in5, out=dff-out5, out=out[5]);
+    DFF(in=dff-in6, out=dff-out6, out=out[6]);
+    DFF(in=dff-in7, out=dff-out7, out=out[7]);
+    DFF(in=dff-in8, out=dff-out8, out=out[8]);
+    DFF(in=dff-in9, out=dff-out9, out=out[9]);
+    DFF(in=dff-in10, out=dff-out10, out=out[10]);
+    DFF(in=dff-in11, out=dff-out11, out=out[11]);
+    DFF(in=dff-in12, out=dff-out12, out=out[12]);
+    DFF(in=dff-in13, out=dff-out13, out=out[13]);
+    DFF(in=dff-in14, out=dff-out14, out=out[14]);
+    DFF(in=dff-in15, out=dff-out15, out=out[15]);
 }

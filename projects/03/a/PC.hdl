@@ -12,9 +12,29 @@
  */
 
 CHIP PC {
+    // reset > load > inc
     IN in[16],load,inc,reset;
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Or(a=load, b=inc, out=reg-load-tmp);
+    Or(a=reg-load-tmp, b=reset, out=reg-load);
+
+    Register(in=mux-reset-out, load=reg-load, out=out, out=dff-in);
+
+    Inc16(in=dff-in, out=inc-out);
+
+    // Naive version.
+    // The `a=false` case never loads register, since in that case, `reg-load` is false.
+    //
+    // Mux16(a=false, b=inc-out, sel=inc, out=mux-inc-out);
+    // Mux16(a=mux-inc-out, b=in, sel=load, out=mux-load-out);
+    //
+    // Smarter version.
+    // When `load` is false, we pick the incremented value; if `inc` is true, `reg-load`
+    // will cause such value to be loaded; otherwise, the value will be discarded.
+    //
+    Mux16(a=inc-out, b=in, sel=load, out=mux-load-out);
+
+    Mux16(a=mux-load-out, b=false, sel=reset, out=mux-reset-out);
 }
