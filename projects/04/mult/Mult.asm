@@ -7,3 +7,27 @@
 // (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
 
 // Put your code here.
+
+// R1: used as counter
+
+@R2       // R2 = 0
+M=0
+
+(LOOP)
+@R1       // if R1 == 0, goto end
+D=M
+@END
+D; JEQ
+
+@R0       // R2 = R2 + R0
+D=M
+@R2
+M=D+M
+
+@R1       // R1 = R1 - 1
+M=M-1
+
+@LOOP     // goto loop
+0; JMP
+
+(END)
