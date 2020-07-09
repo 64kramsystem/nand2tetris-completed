@@ -27,5 +27,48 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    //     14|13, 12
+    //
+    // 16k : 00 0 0000 0000 0000)
+    //     : 01 1 1111 1111 1111)
+    // 8k  : 10 0 0000 0000 0000)
+    //     : 10 1 0000 0000 0000)
+    // 1   : 11 0 0000 0000 0000)
+
+    // 9999: 00 1 0011 1000 01111
+
+    // Load dmux
+
+    Not(in=address[14], out=is-data);
+
+    Not(in=address[13], out=is-screen-tmp);
+    And(a=address[14], b=is-screen-tmp, out=is-screen);
+
+    And(a=address[13], b=address[14], out=is-keyboard);
+
+    And(a=is-data, b=load, out=load-data);
+    And(a=is-screen, b=load, out=load-screen);
+    And(a=is-keyboard, b=load, out=load-keyboard);
+
+    // Data memory
+
+    RAM16K(in=in, load=load-data, address=address[0..13], out=out-data);
+
+    // Screen memory
+
+    Not(in=address[12], out=load-screen-0);
+
+    RAM4K(in=in, load=load-screen-0, address=address[0..11], out=out-screen-0);
+    RAM4K(in=in, load=address[12], address=address[0..11], out=out-screen-1);
+
+    Mux16(a=out-screen-0, b=out-screen-1, sel=load-screen-0, out=out-screen);
+
+    // Keyboard memory
+
+    Register(in=in, load=load-keyboard, out=out-keyboard);
+
+    // Output
+
+    Mux4Way16(a=out-data, b=out-data, c=out-screen, d=out-keyboard, sel=address[13..14], out=out);
+
 }
