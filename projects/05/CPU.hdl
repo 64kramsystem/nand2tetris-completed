@@ -39,5 +39,332 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    //////////////////////////////////////////////////////////
+    // General Flags
+    //////////////////////////////////////////////////////////
+
+    Not(in=instruction[0], out=no-inst-0); // jmp
+    Not(in=instruction[1], out=no-inst-1);
+    Not(in=instruction[2], out=no-inst-2);
+    Not(in=instruction[3], out=no-inst-3); // dest
+    Not(in=instruction[4], out=no-inst-4);
+    Not(in=instruction[5], out=no-inst-5);
+    Not(in=instruction[6], out=no-inst-6); // comp
+    Not(in=instruction[7], out=no-inst-7);
+    Not(in=instruction[8], out=no-inst-8);
+    Not(in=instruction[9], out=no-inst-9);
+    Not(in=instruction[10], out=no-inst-10);
+    Not(in=instruction[11], out=no-inst-11);
+    Not(in=instruction[12], out=no-inst-12); // a
+    Not(in=instruction[15], out=no-inst-15); // opcode
+
+    Or(a=instruction[15], b=false, out=is-c-instr);
+    Not(in=instruction[15], out=is-a-instr);
+
+    And(a=instruction[3], b=is-c-instr, out=dest-ram);
+    And(a=instruction[4], b=is-c-instr, out=dest-dreg);
+    And(a=instruction[5], b=is-c-instr, out=dest-areg);
+
+    And(a=instruction[12], b=is-c-instr, out=operand-a-or-m);
+
+    //////////////////////////////////////////////////////////
+    // Comp table
+    //////////////////////////////////////////////////////////
+
+    // 101010 -> 0
+
+    And(a=instruction[11], b=no-inst-10,      out=cmp-0-t0);
+    And(a=cmp-0-t0,        b=instruction[9],  out=cmp-0-t1);
+    And(a=cmp-0-t1,        b=no-inst-8,       out=cmp-0-t2);
+    And(a=cmp-0-t2,        b=instruction[7],  out=cmp-0-t3);
+    And(a=cmp-0-t3,        b=no-inst-6,       out=cmp-0);
+
+    // 111111 -> 1
+
+    And(a=instruction[11], b=instruction[10], out=cmp-1-t0);
+    And(a=cmp-1-t0,        b=instruction[9],  out=cmp-1-t1);
+    And(a=cmp-1-t1,        b=instruction[8],  out=cmp-1-t2);
+    And(a=cmp-1-t2,        b=instruction[7],  out=cmp-1-t3);
+    And(a=cmp-1-t3,        b=instruction[6],  out=cmp-1);
+
+    // 111010 -> -1
+
+    And(a=instruction[11], b=instruction[10], out=cmp-mn-1-t0);
+    And(a=cmp-mn-1-t0,     b=instruction[9],  out=cmp-mn-1-t1);
+    And(a=cmp-mn-1-t1,     b=no-inst-8,       out=cmp-mn-1-t2);
+    And(a=cmp-mn-1-t2,     b=instruction[7],  out=cmp-mn-1-t3);
+    And(a=cmp-mn-1-t3,     b=no-inst-6,       out=cmp-mn-1);
+
+    // 001100 -> D
+
+    And(a=no-inst-11,      b=no-inst-10,      out=cmp-d-t0);
+    And(a=cmp-d-t0,        b=instruction[9],  out=cmp-d-t1);
+    And(a=cmp-d-t1,        b=instruction[8],  out=cmp-d-t2);
+    And(a=cmp-d-t2,        b=no-inst-7,       out=cmp-d-t3);
+    And(a=cmp-d-t3,        b=no-inst-6,       out=cmp-d);
+
+    // 110000 -> Y
+
+    And(a=instruction[11], b=instruction[10], out=cmp-y-t0);
+    And(a=cmp-y-t0,        b=no-inst-9,       out=cmp-y-t1);
+    And(a=cmp-y-t1,        b=no-inst-8,       out=cmp-y-t2);
+    And(a=cmp-y-t2,        b=no-inst-7,       out=cmp-y-t3);
+    And(a=cmp-y-t3,        b=no-inst-6,       out=cmp-y);
+
+    // 011111 -> X + 1
+
+    And(a=no-inst-11,      b=instruction[10], out=cmp-d-pl-1-t0);
+    And(a=cmp-d-pl-1-t0,   b=instruction[9],  out=cmp-d-pl-1-t1);
+    And(a=cmp-d-pl-1-t1,   b=instruction[8],  out=cmp-d-pl-1-t2);
+    And(a=cmp-d-pl-1-t2,   b=instruction[7],  out=cmp-d-pl-1-t3);
+    And(a=cmp-d-pl-1-t3,   b=instruction[6],  out=cmp-d-pl-1);
+
+    // 011100 -> Y + 1
+
+    And(a=instruction[11], b=instruction[10], out=cmp-y-pl-1-t0);
+    And(a=cmp-y-pl-1-t0,   b=no-inst-9,       out=cmp-y-pl-1-t1);
+    And(a=cmp-y-pl-1-t1,   b=instruction[8],  out=cmp-y-pl-1-t2);
+    And(a=cmp-y-pl-1-t2,   b=instruction[7],  out=cmp-y-pl-1-t3);
+    And(a=cmp-y-pl-1-t3,   b=instruction[6],  out=cmp-y-pl-1);
+
+    // 011100 -> D - 1
+
+    And(a=no-inst-11,      b=no-inst-10,      out=cmp-d-mn-1-t0);
+    And(a=cmp-d-mn-1-t0,   b=instruction[9],  out=cmp-d-mn-1-t1);
+    And(a=cmp-d-mn-1-t1,   b=instruction[8],  out=cmp-d-mn-1-t2);
+    And(a=cmp-d-mn-1-t2,   b=instruction[7],  out=cmp-d-mn-1-t3);
+    And(a=cmp-d-mn-1-t3,   b=no-inst-6,       out=cmp-d-mn-1);
+
+    // 000010 -> D + Y
+
+    And(a=no-inst-11,      b=no-inst-10,      out=cmp-d-pl-y-t0);
+    And(a=cmp-d-pl-y-t0,   b=no-inst-9,       out=cmp-d-pl-y-t1);
+    And(a=cmp-d-pl-y-t1,   b=no-inst-8,       out=cmp-d-pl-y-t2);
+    And(a=cmp-d-pl-y-t2,   b=instruction[7],  out=cmp-d-pl-y-t3);
+    And(a=cmp-d-pl-y-t3,   b=no-inst-6,       out=cmp-d-pl-y);
+
+    // 010011 -> D - Y
+
+    And(a=no-inst-11,      b=instruction[10], out=cmp-d-mn-y-t0);
+    And(a=cmp-d-mn-y-t0,   b=no-inst-9,       out=cmp-d-mn-y-t1);
+    And(a=cmp-d-mn-y-t1,   b=no-inst-8,       out=cmp-d-mn-y-t2);
+    And(a=cmp-d-mn-y-t2,   b=instruction[7],  out=cmp-d-mn-y-t3);
+    And(a=cmp-d-mn-y-t3,   b=instruction[6],  out=cmp-d-mn-y);
+
+    // 000111 -> Y - D
+
+    And(a=no-inst-11,    b=no-inst-10,     out=cmp-y-mn-d-t0);
+    And(a=cmp-y-mn-d-t0, b=no-inst-9,      out=cmp-y-mn-d-t1);
+    And(a=cmp-y-mn-d-t1, b=instruction[8], out=cmp-y-mn-d-t2);
+    And(a=cmp-y-mn-d-t2, b=instruction[7], out=cmp-y-mn-d-t3);
+    And(a=cmp-y-mn-d-t3, b=instruction[6], out=cmp-y-mn-d);
+
+    //////////////////////////////////////////////////////////
+    // A register
+    //////////////////////////////////////////////////////////
+
+    Mux16(a=areg-mux-in, b=instruction, sel=is-a-instr, out=areg-in);
+
+    Or(a=dest-areg, b=is-a-instr, out=load-areg);
+
+    ARegister(
+      in=areg-in,
+      load=load-areg,
+      out=areg-out,
+      out[0..14]=addressM,
+      out=pc-in
+    );
+
+    //////////////////////////////////////////////////////////
+    // D register
+    //////////////////////////////////////////////////////////
+
+    DRegister(
+      in=dreg-in,
+      load=dest-dreg,
+      out=alu-x
+    );
+
+    //////////////////////////////////////////////////////////
+    // ALU FRONT
+    //////////////////////////////////////////////////////////
+
+    Mux16(
+      a=areg-out,
+      b=inM,
+      sel=operand-a-or-m,
+      out=alu-y
+    );
+
+    //////////////////////////////////////////////////////////
+    // ALU
+    //////////////////////////////////////////////////////////
+
+    // In order to add something new, increment the t<N> pin on the alu
+    // registers, then fill the logical gap with an Or.
+
+    // cmp-0: 0x + 0y
+
+    Or(a=alu-zx-t2, b=cmp-0, out=alu-zx-t3);
+    Or(a=alu-zy-t3, b=cmp-0, out=alu-zy-t4);
+
+    // cmp-1: ^(0x^x + 0y^y)
+
+    Or(a=alu-zx-t3, b=cmp-1, out=alu-zx-t4);
+    Or(a=alu-nx-t2, b=cmp-1, out=alu-nx-t3);
+    Or(a=alu-zy-t4, b=cmp-1, out=alu-zy-t5);
+    Or(a=alu-ny-t3, b=cmp-1, out=alu-ny-t4);
+    Or(a=alu-f-t7, b=cmp-1, out=alu-f-t8);
+    Or(a=alu-no-t4, b=cmp-1, out=alu-no-t5);
+
+    // cmp-mn-1: 0x + 0y + no
+
+    Or(a=alu-zx-t1, b=cmp-mn-1, out=alu-zx-t2);
+    Or(a=alu-zy-t2, b=cmp-mn-1, out=alu-zy-t3);
+    Or(a=alu-no-t3, b=cmp-mn-1, out=alu-no-t4);
+
+    // cmp-d: x + 0y
+
+    Or(a=false, b=cmp-d, out=alu-zy-t0);
+    Or(a=alu-f-t1, b=cmp-d, out=alu-f-t2);
+
+    // cmp-y: 0x + y
+
+    Or(a=false, b=cmp-y, out=alu-zx-t0);
+    Or(a=false, b=cmp-y, out=alu-f-t0);
+
+    // cmp-d-pl-1: ^(^x + -1) = ^(^x + 0y^y)
+
+    Or(a=alu-nx-t1, b=cmp-d-pl-1, out=alu-nx-t2);
+    Or(a=alu-zy-t1, b=cmp-d-pl-1, out=alu-zy-t2);
+    Or(a=alu-ny-t2, b=cmp-d-pl-1, out=alu-ny-t3);
+    Or(a=alu-f-t5,  b=cmp-d-pl-1, out=alu-f-t6);
+    Or(a=alu-no-t2, b=cmp-d-pl-1, out=alu-no-t3);
+
+    // cmp-y-pl-1: ^(^y + -1) = ^(^y + 0x^x)
+
+    Or(a=alu-zx-t0, b=cmp-y-pl-1, out=alu-zx-t1);
+    Or(a=alu-nx-t0, b=cmp-y-pl-1, out=alu-nx-t1);
+    Or(a=alu-ny-t1, b=cmp-y-pl-1, out=alu-ny-t2);
+    Or(a=alu-f-t4,  b=cmp-y-pl-1, out=alu-f-t5);
+    Or(a=alu-no-t1, b=cmp-y-pl-1, out=alu-no-t2);
+
+    // cmp-d-mn-1: x + ^(0y)
+
+    Or(a=alu-zy-t0, b=cmp-d-mn-1, out=alu-zy-t1);
+    Or(a=alu-ny-t0, b=cmp-d-mn-1, out=alu-ny-t1);
+    Or(a=alu-f-t2,  b=cmp-d-mn-1, out=alu-f-t3);
+
+    // cmp-d-pl-y: x + y
+
+    Or(a=alu-f-t6,  b=cmp-d-pl-y, out=alu-f-t7);
+
+    // cmp-d-mn-y: ^(^x + y)
+
+    Or(a=false,     b=cmp-d-mn-y, out=alu-nx-t0);
+    Or(a=alu-f-t3,  b=cmp-d-mn-y, out=alu-f-t4);
+    Or(a=alu-no-t0, b=cmp-d-mn-y, out=alu-no-t1);
+
+    // cmp-y-mn-d: ^(^y + x)
+
+    Or(a=false,    b=cmp-y-mn-d, out=alu-ny-t0);
+    Or(a=alu-f-t0, b=cmp-y-mn-d, out=alu-f-t1);
+    Or(a=false,    b=cmp-y-mn-d, out=alu-no-t0);
+
+    // f==0  => x & y
+    // f==1  => x + y
+    ALU(
+      x=alu-x,
+      y=alu-y,
+
+      zx=alu-zx-t4,
+      nx=alu-nx-t3,
+      zy=alu-zy-t5,
+      ny=alu-ny-t4,
+      f=alu-f-t8,
+      no=alu-no-t5,
+
+      out=dreg-in,
+      out=areg-mux-in,
+      out=outM,
+
+      zr=alu-zr,
+      ng=alu-ng
+    );
+
+    // Other pins
+
+    Or(a=dest-ram, b=false, out=writeM);
+
+    //////////////////////////////////////////////////////////
+    // PC (/JUMPS)
+    //////////////////////////////////////////////////////////
+
+    Not(in=alu-zr, out=not-alu-zr);
+    Not(in=alu-ng, out=not-alu-ng);
+
+    // 001: JGT (^zr & ^ng)
+
+    And(a=instruction[0], b=no-inst-1,  out=is-jgt-t1);
+    And(a=is-jgt-t1,      b=no-inst-2,  out=is-jgt);
+    And(a=is-jgt,         b=not-alu-zr, out=jgt-cond);
+    And(a=jgt-cond,       b=not-alu-ng, out=do-jgt);
+
+    // 010: JEQ (zr)
+
+    And(a=no-inst-0, b=instruction[1], out=is-jeq-t1);
+    And(a=is-jeq-t1, b=no-inst-2, out=is-jeq);
+    And(a=is-jeq, b=alu-zr, out=do-jeq);
+
+    // 011: JGE (zr | ^ng)
+
+    And(a=instruction[0], b=instruction[1], out=is-jge-t1);
+    And(a=is-jge-t1,      b=no-inst-2,      out=is-jge);
+    Or(a=alu-zr,          b=not-alu-ng,     out=jge-cond);
+    And(a=is-jge,         b=jge-cond,       out=do-jge);
+
+    // 100: JLT (^zr & ng)
+
+    And(a=no-inst-0, b=no-inst-1, out=is-jlt-t1);
+    And(a=is-jlt-t1, b=instruction[2], out=is-jlt);
+    And(a=is-jlt, b=not-alu-zr, out=jlt-cond);
+    And(a=jlt-cond, b=alu-ng, out=do-jlt);
+
+    // 101: JNE (^zr)
+
+    And(a=instruction[0], b=no-inst-1, out=is-jne-t1);
+    And(a=is-jne-t1, b=instruction[2], out=is-jne);
+    And(a=is-jne, b=not-alu-zr, out=do-jne);
+
+    // 110: JLE (zr | ng)
+
+    And(a=no-inst-0, b=instruction[1], out=is-jle-t1);
+    And(a=is-jle-t1, b=instruction[2], out=is-jle);
+    Or(a=alu-zr, b=alu-ng, out=jle-cond);
+    And(a=is-jle, b=jle-cond, out=do-jle);
+
+    // 111: JMP
+
+    And(a=instruction[0], b=instruction[1], out=is-ujmp-t1);
+    And(a=is-ujmp-t1,      b=instruction[2], out=do-ujmp);
+
+    // Jump computation
+
+    Or(a=do-jeq, b=do-jlt, out=do-jmp-t0);
+    Or(a=do-jmp-t0, b=do-jle, out=do-jmp-t1);
+    Or(a=do-jmp-t1, b=do-jne, out=do-jmp-t2);
+    Or(a=do-jmp-t2, b=do-ujmp, out=do-jmp-t3);
+    Or(a=do-jmp-t3, b=do-jge, out=do-jmp-t4);
+    Or(a=do-jmp-t4, b=do-jgt, out=do-jmp-t5);
+
+    And(a=do-jmp-t5, b=is-c-instr, out=do-jmp);
+
+    PC(
+      in=pc-in,
+      load=do-jmp,
+      inc=true,
+      reset=reset,
+      out[0..14]=pc
+    );
 }
