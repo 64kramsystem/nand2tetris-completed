@@ -19,5 +19,51 @@ CHIP Computer {
     IN reset;
 
     PARTS:
-    // Put your code here:
+    CPU(
+      inM=cpu-in-m,
+      instruction=cpu-instruction,
+      reset=reset,
+      outM=cpu-out-m,
+      writeM=cpu-write-m,
+      addressM[0]=cpu-address-m-0,
+      addressM[1]=cpu-address-m-1,
+      addressM[2]=cpu-address-m-2,
+      addressM[3]=cpu-address-m-3,
+      addressM[4]=cpu-address-m-4,
+      addressM[5]=cpu-address-m-5,
+      addressM[6]=cpu-address-m-6,
+      addressM[7]=cpu-address-m-7,
+      addressM[8]=cpu-address-m-8,
+      addressM[9]=cpu-address-m-9,
+      addressM[10]=cpu-address-m-10,
+      addressM[11]=cpu-address-m-11,
+      addressM[12]=cpu-address-m-12,
+      addressM[13]=cpu-address-m-13,
+      pc=cpu-pc
+    );
+
+    ROM32K(
+      address=cpu-pc,
+      out=cpu-instruction
+    );
+
+    Memory(
+      in=cpu-out-m,
+      load=cpu-write-m,
+      address[0]=cpu-address-m-0,
+      address[1]=cpu-address-m-1,
+      address[2]=cpu-address-m-2,
+      address[3]=cpu-address-m-3,
+      address[4]=cpu-address-m-4,
+      address[5]=cpu-address-m-5,
+      address[6]=cpu-address-m-6,
+      address[7]=cpu-address-m-7,
+      address[8]=cpu-address-m-8,
+      address[9]=cpu-address-m-9,
+      address[10]=cpu-address-m-10,
+      address[11]=cpu-address-m-11,
+      address[12]=cpu-address-m-12,
+      address[13]=cpu-address-m-13,
+      out=cpu-in-m
+    );
 }
