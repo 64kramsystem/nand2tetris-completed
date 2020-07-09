@@ -128,6 +128,22 @@ CHIP CPU {
     And(a=cmp-not-y-t2,    b=no-inst-7,       out=cmp-not-y-t3);
     And(a=cmp-not-y-t3,    b=instruction[6],  out=cmp-not-y);
 
+    // 001111 -> -D (!!)
+
+    And(a=no-inst-11,    b=no-inst-10,      out=cmp-mn-d-t0);
+    And(a=cmp-mn-d-t0,   b=instruction[9],  out=cmp-mn-d-t1);
+    And(a=cmp-mn-d-t1,   b=instruction[8],  out=cmp-mn-d-t2);
+    And(a=cmp-mn-d-t2,   b=instruction[7],  out=cmp-mn-d-t3);
+    And(a=cmp-mn-d-t3,   b=instruction[6],  out=cmp-mn-d);
+
+    // 110011 -> -Y (!!)
+
+    And(a=instruction[11], b=instruction[10], out=cmp-mn-y-t0);
+    And(a=cmp-mn-y-t0,     b=no-inst-9,       out=cmp-mn-y-t1);
+    And(a=cmp-mn-y-t1,     b=no-inst-8,       out=cmp-mn-y-t2);
+    And(a=cmp-mn-y-t2,     b=instruction[7],  out=cmp-mn-y-t3);
+    And(a=cmp-mn-y-t3,     b=instruction[6],  out=cmp-mn-y);
+
     // 011111 -> X + 1
 
     And(a=no-inst-11,      b=instruction[10], out=cmp-d-pl-1-t0);
@@ -278,6 +294,20 @@ CHIP CPU {
     Or(a=alu-ny-t5, b=cmp-not-y, out=alu-ny-t6);
     Or(a=alu-f-t10, b=cmp-not-y, out=alu-f-t11);
 
+    // cmp-mn-d: ^(x + 0y^y)
+
+    Or(a=alu-zy-t7, b=cmp-mn-d, out=alu-zy-t8);
+    Or(a=alu-ny-t6, b=cmp-mn-d, out=alu-ny-t7);
+    Or(a=alu-f-t11, b=cmp-mn-d, out=alu-f-t12);
+    Or(a=alu-no-t6, b=cmp-mn-d, out=alu-no-t7);
+
+    // cmp-mn-y: ^(0x^x + y)
+
+    Or(a=alu-zx-t5, b=cmp-mn-y, out=alu-zx-t6);
+    Or(a=alu-nx-t5, b=cmp-mn-y, out=alu-nx-t6);
+    Or(a=alu-f-t12, b=cmp-mn-y, out=alu-f-t13);
+    Or(a=alu-no-t7, b=cmp-mn-y, out=alu-no-t8);
+
     // cmp-d-pl-1: ^(^x + -1) = ^(^x + 0y^y)
 
     Or(a=alu-nx-t1, b=cmp-d-pl-1, out=alu-nx-t2);
@@ -333,12 +363,12 @@ CHIP CPU {
       x=alu-x,
       y=alu-y,
 
-      zx=alu-zx-t5,
-      nx=alu-nx-t5,
-      zy=alu-zy-t7,
-      ny=alu-ny-t6,
-      f=alu-f-t11,
-      no=alu-no-t6,
+      zx=alu-zx-t6,
+      nx=alu-nx-t6,
+      zy=alu-zy-t8,
+      ny=alu-ny-t7,
+      f=alu-f-t13,
+      no=alu-no-t8,
 
       out=dreg-in,
       out=areg-mux-in,
