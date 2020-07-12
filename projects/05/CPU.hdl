@@ -152,7 +152,7 @@ CHIP CPU {
     And(a=cmp-d-pl-1-t2,   b=instruction[7],  out=cmp-d-pl-1-t3);
     And(a=cmp-d-pl-1-t3,   b=instruction[6],  out=cmp-d-pl-1);
 
-    // 011100 -> Y + 1
+    // 110111 -> Y + 1
 
     And(a=instruction[11], b=instruction[10], out=cmp-y-pl-1-t0);
     And(a=cmp-y-pl-1-t0,   b=no-inst-9,       out=cmp-y-pl-1-t1);
